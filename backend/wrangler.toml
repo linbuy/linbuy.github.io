@@ -1,0 +1,43 @@
+name = "genco-backend"
+main = "src/index.js"
+compatibility_date = "2026-02-07"
+account_id = "7024200e266c3ff63373fd267d8f0743"
+
+# ========================
+# KV (default / production)
+# Isi id di bawah setelah menjalankan: npx wrangler kv namespace create "KV_KEYS"
+# Lihat backend/KV_SETUP.md untuk panduan lengkap.
+# ========================
+[[kv_namespaces]]
+binding = "KV_KEYS"
+id = "2766146efd3045c595912ec67ba507f9"
+
+
+# ========================
+# STAGING (untuk local test)
+# Isi id di bawah setelah: npx wrangler kv namespace create "KV_KEYS" --env staging
+# ========================
+[env.staging]
+name = "genco-backend-staging"
+workers_dev = true
+
+[env.staging.vars]
+ALLOWED_ORIGINS = "http://127.0.0.1:8080,http://localhost:8080,http://192.168.1.3:8080,http://127.0.0.1:8000,http://localhost:8000,http://192.168.1.3:8000"
+
+[[env.staging.kv_namespaces]]
+binding = "KV_KEYS"
+id = "7585db3164dd4c53b981f4bea25bde58"
+
+# ========================
+# PRODUCTION (bisa pakai id yang sama dengan default di atas)
+# ========================
+[env.production]
+name = "genco-backend"
+workers_dev = true
+
+[env.production.vars]
+ALLOWED_ORIGINS = "https://ai-citju.github.io,https://linbuy.github.io/"
+
+[[env.production.kv_namespaces]]
+binding = "KV_KEYS"
+id = "2766146efd3045c595912ec67ba507f9"
