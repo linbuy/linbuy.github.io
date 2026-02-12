@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login Admin — Genco</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <!-- Supaya di localhost backend URL otomatis 127.0.0.1:8787 tanpa harus set Settings dulu -->
+  <script src="./js/config.js"></script>
+</head>
+<body>
+  <main style="max-width:520px;margin:48px auto;padding:18px">
+    <h2>Login Admin</h2>
+    <p>Masuk untuk mengelola API keys dan operasi AI. Sesi akan disimpan di browser (session).</p>
+    <form id="loginForm">
+      <label style="display:block;margin-top:10px">Username</label>
+      <input id="loginUser" type="text" class="form-input" placeholder="admin" required />
+      <label style="display:block;margin-top:10px">Password</label>
+      <input id="loginPass" type="password" class="form-input" placeholder="••••••" required />
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="loginBtn" class="primary" type="submit">Masuk</button>
+        <button id="backBtn" type="button" class="secondary">Kembali</button>
+      </div>
+    </form>
+    <div id="loginStatus" style="margin-top:10px;color:#c9d0b3"></div>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById('loginStatus')
+    const form = document.getElementById('loginForm')
+    const backBtn = document.getElementById('backBtn')
+    backBtn.addEventListener('click', ()=>{ window.location.href = 'index.html' })
+
+    function getBackend(){
+      try{
+        const s = String(localStorage.getItem('backend_url')||'').trim()
+        if(s) return s
+        if(window.APP_CONFIG && window.APP_CONFIG.backendURL) return window.APP_CONFIG.backendURL
+        if(window.API_BASE_URL) return window.API_BASE_URL
+        return ''
+      }catch(e){ return '' }
+    }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault()
+      const user = String(document.getElementById('loginUser').value || '').trim()
+      const pass = String(document.getElementById('loginPass').value || '').trim()
+      if(!user || !pass){ statusEl.textContent = 'Isi username & password'; statusEl.style.color = '#c75c5c'; return }
+      const backend = getBackend()
+      if(!backend){ statusEl.textContent = 'Backend belum dikonfigurasi di Settings'; statusEl.style.color = '#c75c5c'; return }
+      statusEl.textContent = '⏳ Menghubungkan…'
+      try{
+        const res = await fetch(String(backend).replace(/\/+$/,'') + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        })
+        const j = await res.json().catch(()=>({ error: 'Invalid JSON' }))
+        if(!res.ok){ statusEl.textContent = '❌ ' + (j.error || ('HTTP ' + res.status)); statusEl.style.color = '#c75c5c'; if(res.status===401) return }
+        if(j && j.token){
+          // Save token in sessionStorage per requirement
+          try{ sessionStorage.setItem('auth_token', String(j.token)) }catch(e){}
+          try{ sessionStorage.setItem('auth_username', user) }catch(e){}
+          statusEl.textContent = '✅ Login berhasil — mengarahkan…'; statusEl.style.color = '#1a7f3a'
+          setTimeout(()=> window.location.href = 'index.html', 600)
+          return
+        }
+        statusEl.textContent = '❌ Login gagal'; statusEl.style.color = '#c75c5c'
+      }catch(err){ statusEl.textContent = '❌ ' + String(err); statusEl.style.color = '#c75c5c' }
+    })
+  </script>
+</body>
+</html>

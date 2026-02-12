@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Content Generator untuk FYP & Viral - TikTok, Reels, Shorts | Genco</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Generator konten AI untuk FYP TikTok, caption Reels, YouTube Shorts. Hook 3 detik, viral, affiliate marketing. Buat caption & script cepat." />
+  <meta name="keywords" content="AI content generator, FYP TikTok, viral Reels, caption Instagram, YouTube Shorts, hook 3 detik, affiliate marketing" />
+  <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
+  <base href="./">
+
+  <script>
+    // Login requirement removed — no early redirect.
+    try { /* no-op */ } catch (e) { /* ignore */ }
+  </script>
+
+  <!-- Theme System (CSS Variables for light/dark mode) -->
+  <link rel="stylesheet" href="./css/theme.css" />
+  
+  <!-- Main Style -->
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- Theme Manager (loads & applies saved theme before page renders) -->
+  <script src="./js/theme.js?v=1"></script>
+</head>
+
+<body>
+
+  <!-- Main AI Generator Container -->
+  <section id="ai-main" style="max-width:1100px;margin:0px auto;padding:0px;border-radius:10px;background:var(--bg-secondary);">
+    <header id="aiMainHeader"></header>
+    <div id="aiMainContainer">Loading AI UI...</div>
+    <div id="ai-settings-placeholder" style="display:none"></div>
+    <div id="ai-history-placeholder" style="display:none"></div>
+  </section>
+
+  <!-- Note: movie grid, controls, modal and gallery removed — page purpose is now AI content generation -->
+
+  <!-- ================= SCRIPTS ================= -->
+  <script>document.getElementById('aiMainContainer').innerText = 'Loading AI UI... (scripts pending)';</script>
+  <script src="./js/config.js?v=1" onload="document.getElementById('aiMainContainer').innerText = 'Loaded: config.js'" onerror="document.getElementById('aiMainContainer').innerText = 'Failed loading config.js'"></script>
+  <script src="./js/ai.js?v=23.1" onload="document.getElementById('aiMainContainer').innerText += ' · Loaded: ai.js'" onerror="document.getElementById('aiMainContainer').innerText += ' · Fail: ai.js'"></script>
+  <script src="./js/presets.js?v=1.1" onload="document.getElementById('aiMainContainer').innerText += ' · Loaded: presets.js'" onerror="document.getElementById('aiMainContainer').innerText += ' · Fail: presets.js'"></script>
+  <script src="./js/settings.js?v=23.1" onload="document.getElementById('aiMainContainer').innerText += ' · Loaded: settings.js'" onerror="document.getElementById('aiMainContainer').innerText += ' · Fail: settings.js'"></script>
+  <script src="./js/tmdb.js?v=23.1" onload="document.getElementById('aiMainContainer').innerText += ' · Loaded: tmdb.js'" onerror="document.getElementById('aiMainContainer').innerText += ' · Fail: tmdb.js'"></script>
+  <script src="./js/main.js?v=24.2" onload="document.getElementById('aiMainContainer').innerText += ' · Loaded: main.js'" onerror="document.getElementById('aiMainContainer').innerText += ' · Fail: main.js'"></script>
+
+</body>
+</html>
