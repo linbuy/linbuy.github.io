@@ -55,6 +55,13 @@
     return headers
   },
 
+  // Backend production tidak menerima apiKey dari client; hanya env/KV. Cek apakah URL backend lokal.
+  isLocalBackend(url) {
+    if (!url || typeof url !== 'string') return false
+    const u = url.replace(/\/+$/, '').toLowerCase()
+    return u.includes('127.0.0.1') || u.includes('localhost')
+  },
+
   init({ backendURL, provider, apiKey }) {
     // idempotent init: skip if nothing changed
     if (
@@ -99,6 +106,7 @@ Sinopsis: ${overview}
     // prefer a configured backend URL (localStorage / APP_CONFIG) over any pre-set this.backendURL
     const base = this.getBackendURLFromConfig() || this.backendURL
     if(!base) throw new Error('AI backendURL not configured')
+    const sendKey = this.isLocalBackend(base) ? this.apiKey : undefined
     let res
     try{
       res = await fetch(`${base}/ai/summarize`, {
@@ -109,7 +117,7 @@ Sinopsis: ${overview}
         },
         body: JSON.stringify({
           provider: this.provider,
-          apiKey: this.apiKey,
+          ...(sendKey != null && sendKey !== '' ? { apiKey: sendKey } : {}),
           prompt
         })
       })
@@ -183,8 +191,11 @@ Sinopsis: ${overview}
     const useProvider = provider || this.provider
     const useKey = apiKey || this.apiKey
     if (!useProvider) throw new Error("AI provider not configured")
-    if (!useKey) throw new Error("AI apiKey not configured")
     if (!prompt) throw new Error("Missing prompt")
+    const base = this.getBackendURLFromConfig() || this.backendURL
+    const isLocal = this.isLocalBackend(base)
+    if (isLocal && !useKey) throw new Error("AI apiKey not configured")
+    if (!isLocal && !useKey) { /* production: backend pakai env/KV */ }
 
     // Direct provider calls are disabled in production by default to avoid
     // exposing API keys and causing CORS/abuse issues. Attempt direct calls
@@ -203,10 +214,8 @@ Sinopsis: ${overview}
       }
     }
 
-    // prefer a configured backend URL (localStorage / APP_CONFIG) over any pre-set this.backendURL
-    const base = this.getBackendURLFromConfig() || this.backendURL
     if(!base) throw new Error('AI backendURL not configured')
-    // summarize() → /ai/summarize; generate() → /ai/generate
+    const sendKey = isLocal ? useKey : undefined
     let res
     try{
       res = await fetch(`${base}/ai/generate`, {
@@ -217,7 +226,7 @@ Sinopsis: ${overview}
         },
         body: JSON.stringify({
           provider: useProvider,
-          apiKey: useKey,
+          ...(sendKey != null && sendKey !== '' ? { apiKey: sendKey } : {}),
           prompt,
           model
         })
